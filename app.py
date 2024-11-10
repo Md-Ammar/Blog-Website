@@ -52,6 +52,13 @@ def home():
     posts = Posts.query.filter_by().all()[:params['no_of_posts']]
     return render_template("index.html", params=params, posts=posts)
 
+@app.route("/dashboard", methods=["GET", "POST"])
+def dashboard():
+    if request.method == "POST":
+        #redirect to admin
+        pass
+    return render_template("signin.html", params=params)
+
 @app.route("/about")
 def about():
     return render_template("about.html", params=params)
