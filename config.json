@@ -1,0 +1,18 @@
+{
+    "params": 
+    {
+        "local_server": "True", 
+        "local_uri": "mysql://root:mohammar435acc@localhost/grand vlogs",
+        "prod_uri": "mysql://root:mohammar435acc@localhost/grand vlogs",
+        "fb_uri": "https://www.facebook.com",
+        "gh_uri": "https://www.github.com/md-ammar",
+        "tw_uri": "https://www.twitter.com", 
+        "blog_name": "Grand Vlogs", 
+        "tag_line": "A blog collection of the, by the, for the programmers!", 
+        "gmail_user": "dummy@gmail.com", 
+        "gmail_password": "dummy",
+        "app_password": "dihs hwih zhqe pjol", 
+        "about": "Hey, this is Ammar, I've made this website using HTML/JS with bootstrap and python flask for the backend, Check out my portfolio", 
+        "no_of_posts": 5
+    }
+}
