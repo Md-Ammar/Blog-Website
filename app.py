@@ -1,13 +1,15 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 import json
+from datetime import datetime
 
 with open("config.json", 'r') as f:
     params = json.load(f)["params"]
 local_server = True
 
 app = Flask(__name__)
+app.secret_key = "anything-here"
 
 app.config.update(
     MAIL_SERVER='smtp.gmail.com',
@@ -45,7 +47,14 @@ class Posts(db.Model):
     tagline = db.Column(db.String(120), nullable=False)
     date = db.Column(db.String(12), nullable=True)
     img_file = db.Column(db.String(50), nullable=True)
-
+    
+    def __init__(self, title, slug, content, tagline, img_file, date):
+        self.title=title
+        self.slug=slug
+        self.content=content
+        self.img_file=img_file
+        self.tagline=tagline
+        self.date = date
 
 @app.route("/")
 def home():
@@ -54,9 +63,19 @@ def home():
 
 @app.route("/dashboard", methods=["GET", "POST"])
 def dashboard():
+    if 'user' in session and session['user'] == params['admin_user']:
+        posts = Posts.query.all()
+        return render_template("dashboard.html", params=params, posts = posts)
+
     if request.method == "POST":
         #redirect to admin
-        pass
+        username = request.form.get('uname')
+        userpass = request.form.get('pass')
+        if username==params['admin_user'] and userpass == params['admin_password']:
+            session['user'] = username
+            posts = Posts.query.all()
+            return render_template("dashboard.html", params=params, posts = posts)
+    
     return render_template("signin.html", params=params)
 
 @app.route("/about")
@@ -68,6 +87,35 @@ def post_route(post_slug):
     post = Posts.query.filter_by(slug=post_slug).first()
     print(post)
     return render_template("post.html", params=params, post=post)
+
+@app.route("/edit/<string:sno>", methods=['GET', 'POST'])
+def edit(sno):
+    if 'user' in session and session['user'] == params['admin_user']:
+        if request.method=="POST":
+            box_title = request.form.get("title")
+            tline = request.form.get("tline")
+            slug = request.form.get("slug")
+            content = request.form.get("content")
+            img_file = request.form.get("img_file")
+            date = datetime.now()
+            
+            if sno=='0':
+                post = Posts(title=box_title, slug=slug, content=content, img_file=img_file, tagline=tline, date=date)
+                db.session.add(post)
+                db.session.commit()
+            else:
+                post = Posts.query.filter_by(sno=sno).first()
+                post.title = box_title 
+                post.slug = slug 
+                post.tagline = tline
+                post.content = content
+                post.img_file = img_file
+                post.date = date
+                db.session.commit()
+                return redirect("/edit/"+sno)
+            
+    post = Posts.query.filter_by(sno=sno).first()
+    return render_template("edit.html", params=params, post=post)
 
 @app.route("/contact", methods=['GET', 'POST'])
 def contact():
