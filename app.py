@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, session, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
-import json
+import json, os
+from werkzeug.utils import secure_filename
 from datetime import datetime
 
 with open("config.json", 'r') as f:
@@ -11,6 +12,7 @@ local_server = True
 app = Flask(__name__)
 app.secret_key = "anything-here"
 
+app.config['UPLOAD_FOLDER'] = params['upload_location']
 app.config.update(
     MAIL_SERVER='smtp.gmail.com',
     MAIL_PORT=465,
@@ -77,6 +79,22 @@ def dashboard():
             return render_template("dashboard.html", params=params, posts = posts)
     
     return render_template("signin.html", params=params)
+
+
+@app.route("/uploader", methods=['GET', 'POST'])
+def uploader():
+    if 'user' in session and session['user'] == params['admin_user']:
+        if request.method=="POST":
+            f=request.files['file1']
+            f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
+            return "Upload success!!!"
+    
+
+@app.route("/logout")
+def logout():
+    if 'user' in session:
+        session.pop('user')
+    return redirect('/dashboard')
 
 @app.route("/about")
 def about():
