@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, session, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
-import json, os
+import json, os, math
 from werkzeug.utils import secure_filename
 from datetime import datetime
 
@@ -60,8 +60,30 @@ class Posts(db.Model):
 
 @app.route("/")
 def home():
-    posts = Posts.query.filter_by().all()[:params['no_of_posts']]
-    return render_template("index.html", params=params, posts=posts)
+    page = request.args.get("page")
+    posts = Posts.query.filter_by().all()
+    no_of_posts = int(params['no_of_posts'])
+
+    last = len(posts)//no_of_posts+1
+    print(f"{last=}")
+
+    if not str(page).isnumeric():
+        page = 1
+    page=int(page)
+    posts = posts[(page-1)*no_of_posts: (page-1)*no_of_posts+no_of_posts]
+    
+    if page==1:
+        prev = "#"
+        next = "/?page="+str(page+1)
+    elif page==last:
+        prev = "/?page="+str(page-1)
+        next = "#"
+    else:
+        prev = "/?page="+str(page-1)
+        next = "/?page="+str(page+1)
+        
+
+    return render_template("index.html", params=params, posts=posts, prev=prev, next=next)
 
 @app.route("/dashboard", methods=["GET", "POST"])
 def dashboard():
@@ -86,8 +108,10 @@ def uploader():
     if 'user' in session and session['user'] == params['admin_user']:
         if request.method=="POST":
             f=request.files['file1']
-            f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
-            return "Upload success!!!"
+            if f.filename:
+                filename = secure_filename(f.filename)
+                f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    return "Upload success!!!"
     
 
 @app.route("/logout")
@@ -105,6 +129,15 @@ def post_route(post_slug):
     post = Posts.query.filter_by(slug=post_slug).first()
     print(post)
     return render_template("post.html", params=params, post=post)
+
+@app.route("/delete/<string:sno>", methods=['GET', 'POST'])
+def delete(sno):
+    if 'user' in session and session['user'] == params['admin_user']:
+        post = Posts.query.filter_by(sno=sno).first()
+        db.session.delete(post)
+        db.session.commit()
+    return redirect('/dashboard')
+
 
 @app.route("/edit/<string:sno>", methods=['GET', 'POST'])
 def edit(sno):
@@ -130,7 +163,7 @@ def edit(sno):
                 post.img_file = img_file
                 post.date = date
                 db.session.commit()
-                return redirect("/edit/"+sno)
+                return redirect("/dashboard")
             
     post = Posts.query.filter_by(sno=sno).first()
     return render_template("edit.html", params=params, post=post)
