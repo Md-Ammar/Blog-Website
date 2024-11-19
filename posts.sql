@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 19, 2024 at 01:16 PM
+-- Generation Time: Nov 19, 2024 at 01:24 PM
 -- Server version: 8.0.35
 -- PHP Version: 8.2.12
 
@@ -20,36 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `grand vlogs`
 --
-
--- --------------------------------------------------------
-
---
--- Table structure for table `contacts`
---
-
-CREATE TABLE `contacts` (
-  `sno` int NOT NULL,
-  `name` text NOT NULL,
-  `phone_num` varchar(15) NOT NULL,
-  `msg` text NOT NULL,
-  `date` datetime DEFAULT CURRENT_TIMESTAMP,
-  `email` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `contacts`
---
-
-INSERT INTO `contacts` (`sno`, `name`, `phone_num`, `msg`, `date`, `email`) VALUES
-(1, 'simamm', '123456789', 'test value', '2024-10-30 16:27:55', 'test@gmail.com'),
-(2, 'Mohammad Ammar', '07365993869', 'dgas', NULL, 'ammaratif559@gmail.com'),
-(5, 'Simran', '7007654569', 'hola gola', NULL, 'simranyadav6119@gmail.com'),
-(16, 'Mohammad Ammar', '07365993869', 'dsad', NULL, 'mohammadammar2022@vitbhopal.ac.in'),
-(17, '', '', '', NULL, ''),
-(18, 'Simran', '7007654569', 'hey gola', NULL, 'simranyadav6119@gmail.com'),
-(19, 'A-S', '8303093869', 'Holaaaaaaaaaa 😘😘😘😘', NULL, 'simranyadav6119@gmail.com'),
-(20, 'A-S', '8303093869', 'Holaaaaaaaaaa 😘😘😘😘', NULL, 'simranyadav6119@gmail.com'),
-(21, 'A-S', '07365993869', 'Holaaaaaaaaaa 😘😘😘😘', NULL, 'simranyadav6119@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -91,12 +61,6 @@ INSERT INTO `posts` (`Sno`, `title`, `tagline`, `slug`, `content`, `img_file`, `
 --
 
 --
--- Indexes for table `contacts`
---
-ALTER TABLE `contacts`
-  ADD PRIMARY KEY (`sno`);
-
---
 -- Indexes for table `posts`
 --
 ALTER TABLE `posts`
@@ -105,12 +69,6 @@ ALTER TABLE `posts`
 --
 -- AUTO_INCREMENT for dumped tables
 --
-
---
--- AUTO_INCREMENT for table `contacts`
---
-ALTER TABLE `contacts`
-  MODIFY `sno` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `posts`
